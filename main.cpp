@@ -25,20 +25,20 @@ int height;
 unsigned int fbo;
 
 //float angleZ =	0.0f;
-float angleY =	0.0f;
-float cam_x =	0.0f;
-float cam_z =	0.0f;
-float loc_x =	1.0f;
-float loc_z =	0.0f;
-float dX =		0.0f;
-float dZ =		0.0f;
-float dAngleY =	0.0f;
+float angleY = 0.0f;
+float cam_x = 0.0f;
+float cam_z = 0.0f;
+float loc_x = 1.0f;
+float loc_z = 0.0f;
+float dX = 0.0f;
+float dZ = 0.0f;
+float dAngleY = 0.0f;
 
 void resize(int w, int h) {
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window of zero width).
 	if (h == 0)
-			h = 1;
+		h = 1;
 
 	float ratio = w * 1.0 / h;
 
@@ -52,7 +52,7 @@ void resize(int w, int h) {
 	glViewport(0, 0, w, h);
 
 	// Set the correct perspective.
-	gluPerspective(45,ratio,1, 100);
+	gluPerspective(45, ratio, 1, 100);
 
 	// Get Back to the Modelview
 	glMatrixMode(GL_MODELVIEW);
@@ -62,10 +62,10 @@ void resize(int w, int h) {
 
 void drawRectangle(int x, int y, int z, int w, int h) {
 	glBegin(GL_TRIANGLE_STRIP);
-		glVertex3f(x, y, z);
-		glVertex3f(x+w, y, z);
-		glVertex3f(x, y+h, z);
-		glVertex3f(x+w, y+h, z);
+	glVertex3f(x, y, z);
+	glVertex3f(x + w, y, z);
+	glVertex3f(x, y + h, z);
+	glVertex3f(x + w, y + h, z);
 	glEnd();
 
 }
@@ -74,7 +74,7 @@ void renderMap(void) {
 	glColor3f(1, 1, 1);
 
 
-	
+
 	//Draw Floor
 	//loadtexture:
 
@@ -104,10 +104,10 @@ void renderMap(void) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBegin(GL_QUADS);
-		glVertex3f(-100.0f, 0.0f, -100.0f); glTexCoord2f(-100, -100);
-		glVertex3f(-100.0f, 0.0f,  100.0f); glTexCoord2f(-100, 100);
-		glVertex3f( 100.0f,	0.0f,  100.0f); glTexCoord2f(100, 100);
-		glVertex3f( 100.0f, 0.0f, -100.0f); glTexCoord2f(100, -100);
+	glVertex3f(-100.0f, 0.0f, -100.0f); glTexCoord2f(-100, -100);
+	glVertex3f(-100.0f, 0.0f, 100.0f); glTexCoord2f(-100, 100);
+	glVertex3f(100.0f, 0.0f, 100.0f); glTexCoord2f(100, 100);
+	glVertex3f(100.0f, 0.0f, -100.0f); glTexCoord2f(100, -100);
 	glEnd();
 }
 
@@ -159,7 +159,7 @@ void renderScene(void) {
 
 	//Reset transformations
 	glLoadIdentity();
-	
+
 	//Compute movements
 	angleY += dAngleY;
 	loc_x = cos(angleY);
@@ -169,9 +169,9 @@ void renderScene(void) {
 
 
 	//Camera setup
-	gluLookAt(	cam_x,			1.0f,	cam_z,				//Camera Position  
-				cam_x + loc_x,	1.0f,	cam_z + loc_z,		//Look at
-				0.0f,			10.0f,	0.0f);				//Up vector
+	gluLookAt(cam_x, 1.0f, cam_z,				//Camera Position  
+		cam_x + loc_x, 1.0f, cam_z + loc_z,		//Look at
+		0.0f, 10.0f, 0.0f);				//Up vector
 
 	renderMap();
 	drawCube();
@@ -193,47 +193,47 @@ void renderScene(void) {
 void processNKeys(unsigned char key, int x, int y) {
 
 	switch (key) {
-		case 'w':
-			dX += 0.1f;
-			dZ += 0.1f;
-			break;
-		case 's':
-			dX -= 0.1f;
-			dZ -= 0.1f;
-			break;
-		case 'd':
-			dAngleY += 0.05f;
-			break;
-		case 'a':
-			dAngleY -= 0.05f;
-			break;
-		case 'r':
-			angleY = 0.0f;
-			loc_x =  1.0f;
-			loc_z =  0.0f;
-			cam_x =	 0.0f;
-			cam_z =  0.0f;
-			break;
+	case 'w':
+		dX += 0.1f;
+		dZ += 0.1f;
+		break;
+	case 's':
+		dX -= 0.1f;
+		dZ -= 0.1f;
+		break;
+	case 'd':
+		dAngleY += 0.05f;
+		break;
+	case 'a':
+		dAngleY -= 0.05f;
+		break;
+	case 'r':
+		angleY = 0.0f;
+		loc_x = 1.0f;
+		loc_z = 0.0f;
+		cam_x = 0.0f;
+		cam_z = 0.0f;
+		break;
 	}
 
 }
 
 void processSKeys(int key, int x, int y) {
 	switch (key) {
-		case GLUT_KEY_UP:
-			break;
-		case GLUT_KEY_RIGHT:
-			angleY += 0.1f;
-			loc_x = cos(angleY);
-			loc_z = sin(angleY);
-			break;
-		case GLUT_KEY_DOWN:
-			break;
-		case GLUT_KEY_LEFT:
-			angleY -= 0.1f;
-			loc_x = cos(angleY);
-			loc_z = sin(angleY);
-			break;
+	case GLUT_KEY_UP:
+		break;
+	case GLUT_KEY_RIGHT:
+		angleY += 0.1f;
+		loc_x = cos(angleY);
+		loc_z = sin(angleY);
+		break;
+	case GLUT_KEY_DOWN:
+		break;
+	case GLUT_KEY_LEFT:
+		angleY -= 0.1f;
+		loc_x = cos(angleY);
+		loc_z = sin(angleY);
+		break;
 	}
 
 }
@@ -244,10 +244,10 @@ void processSKeys(int key, int x, int y) {
 
 void processNKeysReleased(unsigned char key, int x, int y) {
 	switch (key) {
-		case 'w': 
-		case 's': dX = 0; dZ = 0;break;
-		case 'a':
-		case 'd': dAngleY = 0.0f;break;
+	case 'w':
+	case 's': dX = 0; dZ = 0;break;
+	case 'a':
+	case 'd': dAngleY = 0.0f;break;
 	}
 }
 
@@ -261,7 +261,7 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100, 100);
-	glutInitWindowSize( 1000, 500);
+	glutInitWindowSize(1000, 500);
 	glutCreateWindow("Engine3D");
 
 	// register callbacks
