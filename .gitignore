@@ -1,16 +1,12 @@
 
-helloWorld.vcxproj.user
-helloWorld.vcxproj.filters
-helloWorld.vcxproj
-Debug/vc142.pdb
-Debug/vc142.idb
-Debug/main.tlog/main.lastbuildstate
-Debug/main.tlog/link.write.1.tlog
-Debug/main.tlog/link.read.1.tlog
-Debug/main.tlog/link.command.1.tlog
-Debug/main.tlog/CL.write.1.tlog
-Debug/main.tlog/CL.read.1.tlog
-Debug/main.tlog/CL.command.1.tlog
-Debug/main.obj
-Debug/main.ilk
-Debug/main.exe.recipe
+*user
+*.filters
+*.vcxproj
+*.pdb
+*.idb
+*.lastbuildstate
+*.tlog
+*obj
+*.ilk
+*.recipe
+*.log
