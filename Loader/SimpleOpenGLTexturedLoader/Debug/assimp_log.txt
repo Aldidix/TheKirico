@@ -1,0 +1,13 @@
+Info,  T2156: Load models\suzanne.blend
+Info,  T2156: Found a matching importer for this file format
+Info,  T2156: Import root directory is 'models\'
+Info,  T2156: BLEND: Blender version is 2.79 (64bit: true, little endian: true)
+Warn,  T2156: BlendDNA: Did not find a field named `angle` in structure `Camera`
+Warn,  T2156: BlendDNA: Did not find a field named `mat_nr` in structure `MVert`
+Skipping one or more lines with the same contents
+Warn,  T2156: BlendDNA: Did not find a field named `ambir` in structure `Material`
+Warn,  T2156: BlendDNA: Did not find a field named `ambig` in structure `Material`
+Warn,  T2156: BlendDNA: Did not find a field named `ambib` in structure `Material`
+Info,  T2156: (Stats) Fields read: 993, pointers resolved: 16, cache hits: 4, cached objects: 14
+Info,  T2156: Entering post processing pipeline
+Info,  T2156: Leaving post processing pipeline

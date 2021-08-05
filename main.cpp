@@ -11,6 +11,12 @@
 #include <IL/il.h>
 #include <IL\ilu.h>
 #include <IL\ilut.h>
+
+
+// images / texture
+GLuint* textureIds;							// pointer to texture Array
+
+
 #define pi 3.14159265
 using namespace std;
 
@@ -57,8 +63,6 @@ void resize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-
-
 void drawRectangle(int x, int y, int z, int w, int h) {
 	glBegin(GL_TRIANGLE_STRIP);
 	glVertex3f(x, y, z);
@@ -103,7 +107,7 @@ void renderMap(void) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBegin(GL_QUADS);
-	glVertex3f(-100.0f, 0.0f, -100.0f); glTexCoord2f(-100, -100);
+	glVertex3f(-100.0f, 100.0f, -100.0f); glTexCoord2f(-100, -100);
 	glVertex3f(-100.0f, 0.0f, 100.0f); glTexCoord2f(-100, 100);
 	glVertex3f(100.0f, 0.0f, 100.0f); glTexCoord2f(100, 100);
 	glVertex3f(100.0f, 0.0f, -100.0f); glTexCoord2f(100, -100);
@@ -148,6 +152,7 @@ void drawSkybox(void) {
 //	
 //}
 
+
 void renderScene(void) {
 	glEnable(GL_TEXTURE_2D);
 	//Clear Color and Depth buffer
@@ -176,6 +181,7 @@ void renderScene(void) {
 	drawCube();
 	drawSphere();
 	drawCone();
+	
 
 	//glColor3f(.0f, 1.0f, 1.0f);
 	//glBegin(GL_TRIANGLES);
@@ -252,7 +258,6 @@ void processNKeysReleased(unsigned char key, int x, int y) {
 
 
 int main(int argc, char** argv) {
-
 	// init DevIL to load images
 	ilInit();
 
@@ -290,4 +295,3 @@ int main(int argc, char** argv) {
 
 	return 1;
 }
-

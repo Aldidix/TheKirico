@@ -1,0 +1,9 @@
+Info,  T25724: Load models\suzanne2.obj
+Info,  T25724: Found a matching importer for this file format
+Info,  T25724: Import root directory is 'models\'
+Info,  T25724: Entering post processing pipeline
+Info,  T25724: TriangulateProcess finished. All polygons have been triangulated.
+Info,  T25724: Points: 0, Lines: 0, Triangles: 2, Polygons: 0 (Meshes, X = removed)
+Info,  T25724: JoinVerticesProcess finished | Verts in: 2160 out: 1367 | ~36.7%
+Info,  T25724: Cache relevant are 2 meshes (1092 faces). Average output ACMR is 1.379121
+Info,  T25724: Leaving post processing pipeline
