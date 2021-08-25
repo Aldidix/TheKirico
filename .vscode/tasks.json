@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "Compile",
+			"command": "g++",
+			"args": [
+				"main.cpp",
+				"-IC:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/include",
+				"-LC:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/lib",
+				"-lopengl32",
+				"-lglu32",
+				"-lfreeglut",
+				"-lDevIL",
+				"-lILU",
+				"-lILUT",
+				"-lassimp",
+				"-o",
+				"main"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compila"
+		}
+	]
+}

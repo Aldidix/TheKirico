@@ -11,18 +11,25 @@
 #include <IL/il.h>
 #include <IL\ilu.h>
 #include <IL\ilut.h>
+#include "engine.h"
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
+
 #define pi 3.14159265
-//provaa
+
 using namespace std;
+// using namespace engine;
 
 
-const string fileName = "prova.jpg";
-unsigned int id;
-bool success;
-int width;
-int height;
+// const string fileName = "prova.jpg";
+// unsigned int id;
+// bool success;
+// int width;
+// int height;
 
 unsigned int fbo;
+
 
 //float angleZ =	0.0f;
 float angleY =	0.0f;
@@ -34,161 +41,32 @@ float dX =		0.0f;
 float dZ =		0.0f;
 float dAngleY =	0.0f;
 
-void resize(int w, int h) {
-	// Prevent a divide by zero, when window is too short
-	// (you cant make a window of zero width).
-	if (h == 0)
-			h = 1;
 
-	float ratio = w * 1.0 / h;
+// bool DoTheImportThing( const std::string& pFile) {
+//   // Create an instance of the Importer class
+//   Assimp::Importer importer;
 
-	// Use the Projection Matrix
-	glMatrixMode(GL_PROJECTION);
+//   // And have it read the given file with some example postprocessing
+//   // Usually - if speed is not the most important aspect for you - you'll
+//   // probably to request more postprocessing than we do in this example.
+//   const aiScene* scene = importer.ReadFile( pFile,
+//     aiProcess_CalcTangentSpace       |
+//     aiProcess_Triangulate            |
+//     aiProcess_JoinIdenticalVertices  |
+//     aiProcess_SortByPType);
 
-	// Reset Matrix
-	glLoadIdentity();
+//   // If the import failed, report it
+//   if( !scene) {
+//     printf( importer.GetErrorString());
+//     return false;
+//   }
 
-	// Set the viewport to be the entire window
-	glViewport(0, 0, w, h);
+//   // Now we can access the file's contents.
+// //   DoTheSceneProcessing( scene);
 
-	// Set the correct perspective.
-	gluPerspective(45,ratio,1, 100);
-
-	// Get Back to the Modelview
-	glMatrixMode(GL_MODELVIEW);
-}
-
-
-
-void drawRectangle(int x, int y, int z, int w, int h) {
-	glBegin(GL_TRIANGLE_STRIP);
-		glVertex3f(x, y, z);
-		glVertex3f(x+w, y, z);
-		glVertex3f(x, y+h, z);
-		glVertex3f(x+w, y+h, z);
-	glEnd();
-
-}
-
-void renderMap(void) {
-	glColor3f(1, 1, 1);
-
-
-	
-	//Draw Floor
-	//loadtexture:
-
-	if (!id) {
-		ilGenImages(1, &id);
-		ilBindImage(id);
-		success = ilLoadImage((ILstring)fileName.c_str());
-		if (!success) printf("image failed \n");
-		success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
-		if (!success) printf("conversion failed \n");
-		glGenTextures(1, &id);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glBindTexture(GL_TEXTURE_2D, id);
-		width = ilGetInteger(IL_IMAGE_WIDTH);
-		height = ilGetInteger(IL_IMAGE_HEIGHT);
-
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH),
-			ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE,
-			ilGetData());
-	}
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);       // Linear Filtered
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);       // Linear Filtered
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBegin(GL_QUADS);
-		glVertex3f(-100.0f, 0.0f, -100.0f); glTexCoord2f(-100, -100);
-		glVertex3f(-100.0f, 0.0f,  100.0f); glTexCoord2f(-100, 100);
-		glVertex3f( 100.0f,	0.0f,  100.0f); glTexCoord2f(100, 100);
-		glVertex3f( 100.0f, 0.0f, -100.0f); glTexCoord2f(100, -100);
-	glEnd();
-}
-
-void drawCube(void) {
-	//Draw a Cube
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glPushMatrix();
-	glTranslatef(10.0f, 1.0f, 0.0f);
-	glutSolidCube(2.0f);
-	glPopMatrix();
-}
-
-void drawSphere(void) {
-	//Draw a Sphere
-	glColor3f(5.0f, 1.0f, 0.0f);
-	glPushMatrix();
-	glTranslatef(0.0f, 1.0f, 10.0f);
-	glutWireSphere(1.0f, 8, 4);
-	glPopMatrix();
-}
-
-void drawCone(void) {
-	//Draw a Cone
-	glColor3f(0.0f, 1.0f, 1.0f);
-	glPushMatrix();
-	glTranslatef(0.0f, 0.0f, -10.0f);
-	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
-	glutWireCone(1.0f, 2.0f, 6, 2);
-	glPopMatrix();
-}
-
-void drawSkybox(void) {
-	//Draw inverse cube as skybox
-	glColor3f(1.0f, 0.0f, 1.0f);
-	glutSolidCube(100);
-}
-
-//GLuint loadTexture(void) {
-//	
-//}
-
-void renderScene(void) {
-	glEnable(GL_TEXTURE_2D);
-	//Clear Color and Depth buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//Draw Skybox
-	//drawSkybox();
-
-	//Reset transformations
-	glLoadIdentity();
-	
-	//Compute movements
-	angleY += dAngleY;
-	loc_x = cos(angleY);
-	loc_z = sin(angleY);
-	cam_x += dX * loc_x;
-	cam_z += dZ * loc_z;
-
-
-	//Camera setup
-	gluLookAt(	cam_x,			1.0f,	cam_z,				//Camera Position  
-				cam_x + loc_x,	1.0f,	cam_z + loc_z,		//Look at
-				0.0f,			10.0f,	0.0f);				//Up vector
-
-	renderMap();
-	drawCube();
-	drawSphere();
-	drawCone();
-
-	//glColor3f(.0f, 1.0f, 1.0f);
-	//glBegin(GL_TRIANGLES);
-	//	glVertex3f(-2, -2, 0);
-	//	glVertex3f(2, 0.0, 0);
-	//	glVertex3f(0.0, 2, 0);
-	//glEnd();
-
-	//drawRectangle(0, 0, -5, 1, 1);
-
-	glutSwapBuffers();
-}
+//   // We're done. Everything will be cleaned up by the importer destructor
+//   return true;
+// }
 
 void processNKeys(unsigned char key, int x, int y) {
 
@@ -206,6 +84,9 @@ void processNKeys(unsigned char key, int x, int y) {
 			break;
 		case 'a':
 			dAngleY -= 0.05f;
+			break;
+		case 'c':
+			printf("x: %f, y: %f, ang: %f \n", cam_x, cam_z, angleY);
 			break;
 		case 'r':
 			angleY = 0.0f;
@@ -245,12 +126,210 @@ void processSKeys(int key, int x, int y) {
 void processNKeysReleased(unsigned char key, int x, int y) {
 	switch (key) {
 		case 'w': 
-		case 's': dX = 0; dZ = 0;break;
+		case 's': dX = 0; dZ = 0; break;
 		case 'a':
-		case 'd': dAngleY = 0.0f;break;
+		case 'd': dAngleY = 0.0f; break;
 	}
 }
 
+
+void resize(int w, int h) {
+	// Prevent a divide by zero, when window is too short
+	// (you cant make a window of zero width).
+	if (h == 0)
+			h = 1;
+
+	float ratio = w * 1.0 / h;
+
+	// Use the Projection Matrix
+	glMatrixMode(GL_PROJECTION);
+
+	// Reset Matrix
+	glLoadIdentity();
+
+	// Set the viewport to be the entire window
+	glViewport(0, 0, w, h);
+
+	// Set the correct perspective.
+	gluPerspective(45,ratio,1, 100);
+
+	// Get Back to the Modelview
+	glMatrixMode(GL_MODELVIEW);
+}
+
+
+
+void drawRectangle(int x, int y, int z, int w, int h) {
+	glBegin(GL_TRIANGLE_STRIP);
+		glVertex3f(x, y, z);
+		glVertex3f(x+w, y, z);
+		glVertex3f(x, y+h, z);
+		glVertex3f(x+w, y+h, z);
+	glEnd();
+
+}
+
+void drawSphere(void) {
+	//Draw a Sphere
+	glColor3f(5.0f, 1.0f, 0.0f);
+	glPushMatrix();
+	glTranslatef(0.0f, 1.0f, 10.0f);
+	glutWireSphere(1.0f, 8, 4);
+	glPopMatrix();
+}
+
+void drawCone(void) {
+	//Draw a Cone
+	glColor3f(0.0f, 1.0f, 1.0f);
+	glPushMatrix();
+	glTranslatef(0.0f, 0.0f, -10.0f);
+	glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+	glutWireCone(1.0f, 2.0f, 6, 2);
+	glPopMatrix();
+}
+
+void drawSkybox(void) {
+	//Draw inverse cube as skybox
+
+	glColor3f(0.0f, 0.2f, 0.1f);
+	glutSolidCube(100);
+}
+
+
+bool sceneLoaded = false;
+
+//Scene objects
+int isPlayerColliding = 0;
+int plaza = 0;
+std::vector<engine::Area> collisions;
+// std::vector<engine::Model> maps;
+engine::Model map1("Kiricomap.obj");
+engine::Model map2("Kiricomap2.obj");
+std::vector<engine::CollisionMap> collisionmaps;
+// engine::Model table("Table.obj");
+// engine::Model crate("Crate.obj");
+engine::Model plazabase("base.obj");
+engine::Terrain ground;
+engine::Vector2 pos;
+engine::Texture sand;
+engine::Texture brick;
+engine::Area trigger(engine::Vector2(5.0f, -13.0f), 5.0f);
+engine::Area cbox1;
+engine::Color 	col;
+engine::Cube 	cube1;
+engine::Camera camera;
+
+void renderScene(void) {
+	glEnable(GL_TEXTURE_2D);
+	//Clear Color and Depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//Draw Skybox
+	// drawSkybox();
+
+	//Reset transformations
+	glLoadIdentity();
+	
+	//Instantiate scene objects
+	if(!sceneLoaded){
+	// 	table.scale = 1.5f;
+	// 	crate.scale = 1.00f;
+		// collisions.push_back(engine::Area(engine::Vector2(2.5f, -5.5f), 1.0f));
+		collisionmaps.push_back(engine::CollisionMap("KiricomapC.obj"));
+		collisionmaps.push_back(engine::CollisionMap("Kiricomap2C.obj"));
+
+
+		trigger = engine::Area(engine::Vector2(9.0f, -13.0f), 5.0f);
+		// kmap.scale = 1.00f;
+		// crate.text = engine::Texture("box.jpg");
+		brick = engine::Texture("prova.jpg");
+		// crate.pos = engine::Vector3(0.0f, 0.5f, 0.0f);
+		ground = engine::Terrain(100.0f, brick);
+		pos = engine::Vector2(10, 0);	
+		col = engine::Color(0.0f, 1.0f, 0.0f);
+		cube1 = engine::Cube(pos, 2, col);
+		camera = engine::Camera(engine::Vector2(0,0), 0);
+		camera.setActive();
+		sceneLoaded = true;
+	}
+
+
+	//Compute movements
+	angleY += dAngleY;
+	loc_x = cos(angleY);
+	loc_z = sin(angleY);
+	// for(int cb = 0; cb < collisions.size(); cb++){
+	// 	if(collisions[cb].isColliding(cam_x + dX * loc_x, cam_z + dZ * loc_z)){
+	// 		isPlayerColliding = 1;
+	// 		printf("Colliding! \n");
+	// 		break;
+	// 	}
+	// }
+
+	if(trigger.isColliding(cam_x + dX * loc_x, cam_z + dZ * loc_z)){
+		plaza = 1;
+	}
+
+	// if(!isPlayerColliding){
+	// 	cam_x += dX * loc_x;
+	// 	cam_z += dZ * loc_z;
+	// }
+
+	if(!collisionmaps[0].isColliding(cam_x + dX * loc_x, cam_z + dZ * loc_z)){
+		cam_x += dX * loc_x;
+		cam_z += dZ * loc_z;
+	}
+
+	camera.update(engine::Vector2(cam_x, cam_z), angleY);
+
+	// //Camera setup
+	// gluLookAt(	cam_x,			1.0f,	cam_z,				//Camera Position  
+	// 				cam_x + loc_x,	1.0f,	cam_z + loc_z,		//Look at
+	// 				0.0f,			10.0f,	0.0f);				//Up vector
+
+	// cmap.draw();
+	trigger.draw();
+	plazabase.draw();
+	switch (plaza)
+	{
+	case 0:
+		map1.draw();
+		break;
+	case 1:
+		map2.draw();
+		break;
+	default:
+		break;
+	}
+	// table.draw();
+	// crate.draw();
+	for(int cb = 0; cb < collisions.size(); cb++){
+		collisions[cb].draw();
+	}
+	// ground.draw();
+	// renderMap();
+	
+	// printf("x: %f, y: %f, ang: %f \n", cam_x, cam_z, angleY);
+	for(int cb = 0; cb < collisions.size(); cb++){
+		if (collisions[cb].isColliding(cam_x, cam_z)){
+			col.set(1.0f, 0.0f, 0.0f);
+		} 
+		else col.set(0.0f, 1.0f, 0.0f);	
+	}
+	
+	
+	
+	
+	
+	// c.setColor(col);
+	// c.draw();
+	// drawCube();
+	// drawSphere();
+	// drawCone();
+
+	glutSwapBuffers();
+	isPlayerColliding = 0;
+}
 
 int main(int argc, char** argv) {
 
@@ -262,7 +341,7 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize( 1000, 500);
-	glutCreateWindow("Engine3D");
+	glutCreateWindow("The Kirico");
 
 	// register callbacks
 	glutDisplayFunc(renderScene);
@@ -285,10 +364,12 @@ int main(int argc, char** argv) {
 	// ignore repeated key pressed callbacks
 	glutIgnoreKeyRepeat(1);
 
+	// // preload the scene datas
+	// loadScene();
+
 	// enter GLUT event processing loop
 	glutMainLoop();
 
-
-	return 1;
+	return 0;
 }
 
