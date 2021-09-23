@@ -5,6 +5,8 @@
 #include <IL/il.h>
 #include <IL\ilu.h>
 #include <IL\ilut.h>
+#include <ctime>
+#include <chrono>
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>  
@@ -19,6 +21,65 @@ namespace engine
 
 
 Assimp::Importer importer;
+
+class Timer
+{
+public:
+	Timer(int min) : min(min*60){}
+    void start()
+    {
+        m_StartTime = std::chrono::system_clock::now();
+        m_bRunning = true;
+    }
+    
+    void stop()
+    {
+        m_EndTime = std::chrono::system_clock::now();
+        m_bRunning = false;
+    }
+    
+    double elapsedMilliseconds()
+    {
+        std::chrono::time_point<std::chrono::system_clock> endTime;
+        
+        if(m_bRunning)
+        {
+            endTime = std::chrono::system_clock::now();
+        }
+        else
+        {
+            endTime = m_EndTime;
+        }
+        
+        return std::chrono::duration_cast<std::chrono::milliseconds>(endTime - m_StartTime).count();
+    }
+    
+    double elapsedSeconds()
+    {
+        return elapsedMilliseconds() / 1000.0;
+    }
+
+	std::string ToString(){
+		std::string temp;
+		int elapsedSec = (int) elapsedSeconds();
+		int tempmin = (min - elapsedSec)/60; 
+		int tempsec = min - elapsedSec - tempmin*60;
+		temp = std::to_string(tempmin) + ":" + std::to_string(tempsec);
+		return temp;
+	}
+
+	bool hasExpired(){
+		if (min - elapsedSeconds() < 0)
+			return true;
+		else return false;
+	}
+
+private:
+	int min;
+    std::chrono::time_point<std::chrono::system_clock> m_StartTime;
+    std::chrono::time_point<std::chrono::system_clock> m_EndTime;
+    bool                                               m_bRunning = false;
+};
 
 class Color{
 public:
@@ -192,7 +253,7 @@ public:
 			faces.push_back(Face(m->mFaces[f]));
 		}
 	}
-	void draw(float scale = 1, Vector3 position = Vector3(0, 0, 0)){
+	void draw(float scale = 1, Vector3 position = Vector3(0, 0, 0), float rot = 0.0f, float tilt = 0.0f){
 		int i = 0;
 
 		glColor3f(1, 1, 1);
@@ -209,6 +270,8 @@ public:
 
 		glPushMatrix();
 		glTranslatef(position.x, position.y, position.z);
+		glRotatef(rot, 0.0f, 1.0f, 0.0f);
+		glRotatef(tilt, 0.0f, 0.0f, 1.0f);
 		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
@@ -240,12 +303,16 @@ class Model{
 	std::vector<Texture> textures;
 	void addTexture(std::string path){}
 public:
+	float rotation;
+	float tilt;
 	Texture text;
 	float scale;
 	Vector3 pos;
 	Model(){}
 	Model(std::string path){
-		scale = 1.0f;
+		this->scale = 1.0f;
+		this->rotation = 0.0f;
+		this->tilt = 0.0f;
 		printf("Loading file: %s\n", path.c_str());
 		// text = Texture("sand.jpg");
 		const aiScene* scene;
@@ -279,7 +346,7 @@ public:
 	void draw(){
 		for(int i = 0; i < meshes.size(); i++){
 			text.bind();
-			meshes[i].draw(scale, pos);
+			meshes[i].draw(scale, pos, rotation, tilt);
 		} 
 	}
 };
@@ -328,6 +395,75 @@ public:
 			gluLookAt(	pos.x,				1.0f,	pos.y,						//Camera Position  
 						pos.x + cos(angle),	1.0f,	pos.y + sin(angle),		//Look at
 						0.0f,				10.0f,	0.0f);						//Up vector
+	}
+};
+
+class GuiRectangle{
+	Vector2 pos;
+	Color col;
+	float size;
+public:
+	GuiRectangle(){}
+	GuiRectangle(float x, float y, float size, Color col) : pos(Vector2(x, y)), size(size), col(col){}
+	void draw(){
+		glMatrixMode( GL_PROJECTION );
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D( 0, glutGet(GLUT_WINDOW_WIDTH), 0, glutGet(GLUT_WINDOW_HEIGHT));
+		glMatrixMode( GL_MODELVIEW );
+		glPushMatrix();
+		glLoadIdentity();
+		glColor3f(col.r, col.g, col.b);
+		//Draw Here
+		glBegin(GL_POLYGON);
+		glVertex2f(pos.x, 			pos.y		);
+		glVertex2f(pos.x + size, 	pos.y		);
+		glVertex2f(pos.x + size, 	pos.y + size);
+		glVertex2f(pos.x, 			pos.y + size);
+		glEnd();
+		glFlush();
+		glPopMatrix();
+
+		glMatrixMode( GL_PROJECTION );
+		glPopMatrix();
+		glMatrixMode( GL_MODELVIEW );
+	}
+};
+
+class GuiText{
+public:
+	void* font = GLUT_BITMAP_HELVETICA_18;
+	Vector2 pos;
+	Color col;
+	int width, height;
+	std::string text;
+	GuiText(){}
+	GuiText(Vector2 pos, Color col, std::string text) : pos(pos), col(col), text(text), width(1000), height(500){}
+	GuiText(float x, float y, Color col, std::string text) : pos(Vector2(x, y)), col(col), text(text){}
+	void draw(){
+		glDisable(GL_LIGHTING);
+		int len = text.length();
+		char text_char[len + 1];
+		strcpy(text_char, text.c_str());
+		
+		glMatrixMode( GL_PROJECTION );
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D( 0, glutGet(GLUT_WINDOW_WIDTH), 0, glutGet(GLUT_WINDOW_HEIGHT));
+		glMatrixMode( GL_MODELVIEW );
+		glPushMatrix();
+		glLoadIdentity();
+		glColor3f(col.r, col.g, col.b);
+		glRasterPos2f( pos.x, pos.y );
+		for ( int i = 0; i < len ; ++i ) {
+			glutBitmapCharacter(font, text_char[i]);
+		}
+		glPopMatrix();
+
+		glMatrixMode( GL_PROJECTION );
+		glPopMatrix();
+		glMatrixMode( GL_MODELVIEW );
+		glEnable(GL_LIGHTING);
 	}
 };
 
@@ -403,6 +539,7 @@ public:
 class CollisionBox{
 	Vector2 center;
 	Vector2 size;
+	float margin = 0.9f;
 public:
 	std::vector<Sphere> vertex;
 	CollisionBox(){}
@@ -414,16 +551,49 @@ public:
 	}
 	// CollisionBox(Vector2 center, int size):center(center), size(size){}
 	bool isColliding(float x, float y){
-		if(	x >= center.x - size.x && 
-			x <= center.x + size.x && 
-			y >= center.y - size.y && 
-			y <= center.y + size.y) return true;
+		if(	x >= center.x - size.x/2 - margin && 
+			x <= center.x + size.x/2 + margin && 
+			y >= center.y - size.y/2 - margin && 
+			y <= center.y + size.y/2 + margin) return true;
 		return false;
 	}
 
 	void draw(){
 		for(int i = 0; i < vertex.size(); i++)
 			vertex[i].draw();
+	}
+};
+
+class Part{
+	Area cbox;
+	bool taken = 0;
+	float rot = 0;
+public:
+	Model mesh;
+	Vector2 pos;
+	Part(){}
+	Part(std::string path){
+		mesh = Model(path);
+		cbox = Area(10000.0f, 10000000.0f, 1.0f);
+	}
+	void translate(float x, float y){
+		mesh.pos = Vector3(x, 0, y);
+		cbox = Area(x, y, 1.0f);
+	}
+	void draw(){
+		if(!taken){
+			mesh.rotation += 5.0f;
+			mesh.draw();
+		}
+
+	}
+	void take(){
+		taken = 1;
+	}
+	bool isColliding(float x, float y){
+		if(!taken)
+			return cbox.isColliding(x, y);
+		else return false;
 	}
 };
 

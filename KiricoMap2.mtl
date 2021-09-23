@@ -1,5 +1,5 @@
-# Blender MTL File: 'KiricoMap.blend'
-# Material Count: 10
+# Blender MTL File: 'KiricoMap_EliosVersion.blend'
+# Material Count: 9
 
 newmtl Collumn.007
 Ns 225.000000
@@ -21,17 +21,6 @@ Ni 1.450000
 d 1.000000
 illum 2
 
-newmtl FloorWood.007
-Ns 225.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.800000 0.800000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.450000
-d 1.000000
-illum 2
-map_Kd wood.jpg
-
 newmtl None
 Ns 500
 Ka 0.8 0.8 0.8
@@ -49,6 +38,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd textures\\wallsRed.png
 
 newmtl Roof.007
 Ns 225.000000
@@ -59,6 +49,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd textures\\roof.png
 
 newmtl RoofLight.007
 Ns 225.000000
@@ -69,6 +60,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd textures\\roofLight.png
 
 newmtl Walls.006
 Ns 225.000000
@@ -79,6 +71,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd textures\\wallsBlue.png
 
 newmtl WhiteShaded.008
 Ns 225.000000
@@ -99,3 +92,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd textures\\windows.png
