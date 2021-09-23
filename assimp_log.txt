@@ -1,0 +1,6 @@
+Info,  T16808: Load I:\3DGraphics\TheKirico\Table.blend
+Info,  T16808: Found a matching importer for this file format
+Info,  T16808: Import root directory is 'I:\3DGraphics\TheKirico\'
+Info,  T16808: BLEND: Blender version is 2.92 (64bit: true, little endian: true)
+Info,  T16808: (Stats) Fields read: 12, pointers resolved: 1, cache hits: 0, cached objects: 1
+Error, T16808: BLEND: Expected at least one object with no parent
